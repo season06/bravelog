@@ -1,0 +1,47 @@
+new_contest
+
+id
+uid	
+title
+banner
+host	
+location
+leading_id		（主賽事0）
+timing_com		（廠商）
+timing_chip		（晶片）
+timing_type		（api dropbox hand）
+contest_status	（正常舉行 取消）
+contract_status	（簽約情況）
+attendance		（現場支援）
+extra_service
+memo
+contact_memo
+tags
+qrcode
+service			（服務項目）
+contact_date
+start_date
+end_date
+create_user_id
+update_datetime
+is_deleted		（比賽取消）
+is_passed		（比賽結束）
+
+
+----old race----		----new column----
+RaceDataId 				(primary)
+raceMasterId 			(r)
+RaceId 					contest: uid
+RaceName 				contest: title
+RaceTime 				contest: start_date
+Country 				contest: location
+State 					contest: location
+IsLive					? (int)
+ApiType 				? (int)
+ApiRaceId 				?
+bannerFile 				race: banner (圖檔)
+url 					contest: banner
+allsports_event_id 		?
+series 					?
+org 					?
+eb_certi_raceid			?

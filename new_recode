@@ -1,0 +1,90 @@
+new_record
+
+id
+uid
+race_id
+number
+name
+nation
+gender
+person_finish_time	?
+gun_finish_time		?
+group
+team
+team_sort
+total_place
+group_place
+gender_place
+cp_timing_json
+memo
+tags
+qrcode
+update_datetime
+is_deleted			（棄權）
+is_disqualified		（犯規）
+is_passed
+
+
+---old athlete---	---new column---
+AthleteDataId 		(AthleteRaceId+AthleteNo)
+AthleteRaceId		(=race: RaceId)
+AthleteEventId 		(=event: EventId)
+AthleteNo 			record: number
+AthleteName 		record: name
+AthleteGroup 		record: group
+AthleteGender 		record: gender
+MsaAthleteId 		?
+AthleteCountryCode 	record: nation
+Check_01 Check_02	?
+id_pass 			? (string)
+birth 				(not match)
+checkInTime 		(NULL)
+AthleteTeam 		record: team
+
+---old result---
+DataId 				
+EventCode			(=event: EventId)
+Race 				? (string)
+Gender 				(r)
+Cat 				(r)
+Bib 				(r)
+Name 				(r)
+DSQ 				? (int)
+RankAll 			record: total_place (no total)
+RandCat 			record: RankCat
+RandSex 			record: RankSex
+Mail 				(no match)
+TimeGun 			record: cp_timing_json: "CP_Mode":"Gun"
+TimeStart 			record: cp_timing_json: "CP_Mode":"Start"
+TimeFinish			record: cp_timing_json: "CP_Mode":"End"
+TimeCheck01...		record: cp_timing_json: "CP_Mode":"CP1..."
+finishTime 			!?
+personalFinishTime	!?
+passCount(option)	?
+
+[
+	{
+		"CP_Mode":"Gun",
+		"CP_Time":"2019-12-08 13:55:45.00"
+	},
+	{
+		"CP_Mode":"Start",
+		"CP_Time":"2019-12-08 13:56:07.87",
+		"path":"A"
+	},
+	{
+		"CP_Mode":"CP1",
+		"CP_Time":"2019-12-08 13:56:45.04",
+		"path":"AB"
+	},
+	{
+		"CP_Mode":"CP2",
+		"CP_Time":"2019-12-08 13:57:05.72",
+		"path":"ABC"
+	},
+	{
+		"CP_Mode":"End",
+		"CP_Time":"2019-12-08 13:57:30.10",
+		"path":"ABCA"
+	}
+]
