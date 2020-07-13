@@ -44,8 +44,10 @@ try:
                 'CPName': row['CPName'],
                 'CPDistance': row['CPDistance']
             }
-            query["CP"].append(cp_config)
-        new_race.insert(query)
+            query['cp_json'].append(cp_config)
+        
+    query['cp_json'] = str(query['cp_json'])
+    new_race.insert(query)
 
     newDB.commit()
     print("success")
