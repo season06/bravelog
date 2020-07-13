@@ -50,7 +50,7 @@ try:
             'number': row['AthleteNo'],
             'name': row['AthleteName'],
             'nation': row['AthleteCountryCode'],
-            'gender': row['AthleteGender'],
+            'gender': 0 if row['AthleteGender'] == 'M' else 1,
             'group': row['AthleteGroup'],
             'person_finish_time': float(row['personalFinishTime']),
             'gun_finish_time': float(row['finishTime']),
