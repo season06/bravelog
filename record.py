@@ -35,7 +35,7 @@ try:
                         'CP_Mode': 'End',
                         'CP_Time': row['finishTime']
                     }]
-        for i in range(1,13):
+        for i in range(1,10):
             col = f'TimeCheck0{i}' if i<10 else f'TimeCheck{i}'
             temp = {
                 'CP_Mode': f'CP{i}',
