@@ -23,8 +23,8 @@ is_passed
 
 ----old event----		----new column----
 EventDataId				(primary) 
-RaceId 					(=race: RaceId)
-EventId 				(RaceId + num)
+RaceId 					forien (=old race: RaceId)
+EventId 				r (RaceId + num)
 EventName 				race: title
 totalDistance			(not match)
 msa_eventId 			? (int)
@@ -34,7 +34,7 @@ event_group 			? (array)
 accurat_def 			? (array)
 
 ----old event_checkpoint---
-EventId					(=event: EventId)
+EventId					forign (=old event: EventId)
 CPId					race: cp_json
 CPName
 CPDistance

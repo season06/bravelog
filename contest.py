@@ -2,22 +2,29 @@ import dataset
 oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
 newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
 old_race = oldDB['race']
+old_event = oldDB['event']
+old_athlete = oldDB['event']
+old_event_ck = oldDB['event_ckeckpoint']
+old_result = oldDB['di_result']
+
 new_contest = newDB['contest']
+new_race = newDB['race']
+new_record = newDB['record']
 
 oldDB.begin()
 newDB.begin()
 
 try:
     id = 0
-    for col in old_race:
+    for row in old_race:
         id += 1
         query = {
             'id': id,
-            'uid': col['RaceId'],
-            'title': col['RaceName'],
-            'banner': col['url'],
-            'location': col['Country'],
-            'start_date': col['RaceTime'],
+            'uid': row['RaceId'],
+            'title': row['RaceName'],
+            'banner': row['url'],
+            'location': row['Country'],
+            'start_date': row['RaceTime'],
         }
         new_contest.insert(query)
     newDB.commit()
@@ -28,11 +35,11 @@ except Exception as err:
 
     # query = {
     #         'id': id,
-    #         'uid': col['RaceId'],
-    #         'title': col['RaceName'],
-    #         'banner': col['url'],
+    #         'uid': row['RaceId'],
+    #         'title': row['RaceName'],
+    #         'banner': row['url'],
     #         'host': '',
-    #         'location': col['Country'],
+    #         'location': row['Country'],
     #         'leading_id': '',
     #         'timing_com': '',
     #         'timing_chip': '',
@@ -47,7 +54,7 @@ except Exception as err:
     #         'qrcode': '',
     #         'service': '',
     #         'contact_date': '',
-    #         'start_date': col['RaceTime'],
+    #         'start_date': row['RaceTime'],
     #         'end_date': '',
     #         'create_user_id': '',
     #         'update_datetime': '',
