@@ -1,34 +1,34 @@
 new_record
 
-id
-uid
-race_id
-number
-name
-nation
-gender
-person_finish_time	?
-gun_finish_time		?
-group
-team
-team_sort
-total_place
-group_place
-gender_place
-cp_timing_json
+id 					v
+uid 				id
+race_id 			v
+number 				v
+name 				v
+nation 				v
+gender 				v
+person_finish_time	v
+gun_finish_time		v
+group 				v
+team 				v
+team_sort			id
+total_place			v (no total)
+group_place			v
+gender_place		v
+cp_timing_json 		v
 memo
 tags
 qrcode
-update_datetime
-is_deleted			（棄權）
-is_disqualified		（犯規）
-is_passed
+update_datetime		v
+is_deleted			0（棄權）
+is_disqualified		0（犯規）
+is_passed 			0
 
 
 ---old athlete---	---new column---
-AthleteDataId 		(AthleteRaceId+AthleteNo)
-AthleteRaceId		(=race: RaceId)
-AthleteEventId 		(=event: EventId)
+AthleteDataId 		x (AthleteRaceId+AthleteNo)
+AthleteRaceId		x (=race: RaceId)
+AthleteEventId 		forien record: race_idx(=event: EventId)
 AthleteNo 			record: number
 AthleteName 		record: name
 AthleteGroup 		record: group
@@ -42,9 +42,9 @@ checkInTime 		(NULL)
 AthleteTeam 		record: team
 
 ---old result---
-DataId 				
-EventCode			(=event: EventId)
-Race 				? (string)
+DataId 				forign（=athlete: AthleteDataId)
+EventCode			? (string)
+Race 				foreign (=event: EventId)
 Gender 				(r)
 Cat 				(r)
 Bib 				(r)
@@ -58,8 +58,8 @@ TimeGun 			record: cp_timing_json: "CP_Mode":"Gun"
 TimeStart 			record: cp_timing_json: "CP_Mode":"Start"
 TimeFinish			record: cp_timing_json: "CP_Mode":"End"
 TimeCheck01...		record: cp_timing_json: "CP_Mode":"CP1..."
-finishTime 			!?
-personalFinishTime	!?
+finishTime 			record: person_finish_time
+personalFinishTime	record: gun_finish_time
 passCount(option)	?
 
 [

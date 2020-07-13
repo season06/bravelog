@@ -23,8 +23,12 @@ try:
             'uid': row['RaceId'],
             'title': row['RaceName'],
             'banner': row['url'],
-            'location': row['Country'],
+            'leading_id': 0,
+            'service': 13,
             'start_date': row['RaceTime'],
+            'create_user_id': 'season',
+            'is_deleted': 0,
+            'is_passed': 0
         }
         new_contest.insert(query)
     newDB.commit()

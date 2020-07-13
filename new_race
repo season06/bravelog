@@ -1,49 +1,54 @@
 new_race
 
-id
-uid	
-contest_id
-sort
-title
-start_time			（預計開賽）
-banner				（圖片連結）
-race_type			（option-race type）
-race_status			?
-cp_json
-cp_code				?
+id 					v
+uid	 				id
+contest_id 			v (變短)
+sort 				id
+title 				v
+start_time			
+banner				v		（圖片連結）
+race_type			option	（option-race type）
+race_status			36		（舉行情況：正常舉行 36）
+cp_json				v
+cp_code				
 memo
 memo2
 tags
 qrcode
-create_user_id
-update_datetime
-is_deleted
-is_passed
+create_user_id		season
+update_datetime		v
+is_deleted 			0
+is_passed			0
 
 
 ----old event----		----new column----
 EventDataId				(primary) 
-RaceId 					forien (=old race: RaceId)
+RaceId 					forien race: contest_id(=old race: RaceId)
 EventId 				r (RaceId + num)
 EventName 				race: title
 totalDistance			(not match)
-msa_eventId 			? (int)
+msa_eventId 			(not match) ? (int)
 event_type 				? (int)
 AllSportsDownloadFolder ? (string)
 event_group 			? (array)
 accurat_def 			? (array)
 
 ----old event_checkpoint---
-EventId					forign (=old event: EventId)
+EventId					forign race: cp_json (=old event: EventId)
 CPId					race: cp_json
-CPName
-CPDistance
+CPName					race: cp_json
+CPDistance 				race: cp_json
+CPDistSum
+CP_DB_FIELD_NAME
+CP_DB_RACE_DATA
+CP_LEG
+STARTEND
 
 {
 	"Event":"全程馬拉松組",
 	"CP":[
 		{
-			"CPId":"0",e
+			"CPId":"0",
 			"CPName":"GunStart",
 			"CPDistance":0
 		},
@@ -53,3 +58,9 @@ CPDistance
 			"CPDistance":0
 		}]
 }
+
+全馬：race_type 33
+半馬：race_type 34
+10K：race_type 35
+5K：race_type 5K
+other : race_type null

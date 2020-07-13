@@ -1,31 +1,31 @@
 new_contest
 
-id
-uid	
-title
-banner
+id 					v
+uid					v
+title 				v
+banner 				v
 host	
 location
-leading_id		（主賽事0）
-timing_com		（廠商）
-timing_chip		（晶片）
-timing_type		（api dropbox hand）
-contest_status	（正常舉行 取消）
-contract_status	（簽約情況）
-attendance		（現場支援）
-extra_service
+leading_id			0		（主賽事0）
+timing_com			option	（廠商）
+timing_chip					（晶片）
+timing_type					（api dropbox hand）
+contest_status				（正常舉行 取消）
+contract_status				（簽約情況）
+attendance					（現場支援）
+extra_service	
 memo
 contact_memo
 tags
 qrcode
-service			（服務項目）
+service				13		（服務項目）
 contact_date
-start_date
+start_date			v
 end_date
-create_user_id
-update_datetime
-is_deleted		（比賽取消）
-is_passed		（比賽結束）
+create_user_id 		season
+update_datetime		v
+is_deleted			0		（比賽取消）
+is_passed			0		（比賽結束）
 
 
 ----old race----		----new column----
@@ -34,8 +34,8 @@ raceMasterId 			(r)
 RaceId 					contest: uid
 RaceName 				contest: title
 RaceTime 				contest: start_date
-Country 				contest: location
-State 					contest: location
+Country 				
+State 					
 IsLive					? (int)
 ApiType 				? (int)
 ApiRaceId 				?
@@ -45,3 +45,6 @@ allsports_event_id 		?
 series 					?
 org 					?
 eb_certi_raceid			?
+
+
+di: timing_com 9

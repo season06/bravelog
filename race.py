@@ -10,7 +10,7 @@ oldDB.begin()
 newDB.begin()
 
 try:
-    statement = 'SELECT r.RaceId, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
+    statement = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
                  FROM `race` r, \
                     (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
                      FROM `event_checkpoint` ck, `event` e \
@@ -20,13 +20,16 @@ try:
     id = 0
     event = ''
     query = {}
+
     for row in oldDB.query(statement):
         if event != row['EventName']:
             if event != '':
                 query['cp_json'] = str(query['cp_json'])
                 new_race.insert(query)
+
             event = row['EventName']
             id += 1
+
             cp_config = {
                 'CPId': row['CPId'],
                 'CPName': row['CPName'],
@@ -34,9 +37,16 @@ try:
             }
             query = {
                 'id': id,
+                'uid': id,
                 'contest_id': row['RaceId'],
+                'sort': id,
                 'title': row['EventName'],
-                'cp_json': cp_config
+                'banner': row['bannerFile'],
+                'race_status': 36,
+                'cp_json': [cp_config],
+                'create_user_id': 'season',
+                'is_deleted': 0,
+                'is_passed': 0
             }
         else:
             cp_config = {
@@ -58,7 +68,7 @@ except Exception as err:
     # query = {
     #         'id': id,
     #         'uid': 
-    #         'contest_id': ow['RaceId'],
+    #         'contest_id': row['RaceId'],
     #         'sort': '',
     #         'title': row['EventName'],
     #         'start_time': '',
