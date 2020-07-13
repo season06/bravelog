@@ -23,7 +23,7 @@ try:
     for row in oldDB.query(statement):
         if event != row['EventName']:
             if event != '':
-                query['CP'] = str(query['CP'])
+                query['cp_json'] = str(query['cp_json'])
                 new_race.insert(query)
             event = row['EventName']
             id += 1
@@ -38,7 +38,6 @@ try:
                 'title': row['EventName'],
                 'cp_json': cp_config
             }
-
         else:
             cp_config = {
                 'CPId': row['CPId'],
