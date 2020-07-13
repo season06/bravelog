@@ -20,9 +20,10 @@ try:
     id = 0
     event = ''
     query = {}
-    for row in oldDB_query(statement):
+    for row in oldDB.query(statement):
         if event != row['EventName']:
             if event != '':
+                query['CP'] = str(query['CP'])
                 new_race.insert(query)
             event = row['EventName']
             id += 1
