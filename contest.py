@@ -1,6 +1,6 @@
 import dataset
-oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
-newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog')
+newDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog_new')
 old_race = oldDB['race']
 old_event = oldDB['event']
 old_athlete = oldDB['event']

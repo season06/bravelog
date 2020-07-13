@@ -1,10 +1,10 @@
 import dataset
 # tNMW9ksfylH1oosQ
-oldDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog')
-newDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
+newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
 old_race = oldDB['race']
 old_athlete = oldDB['athlete']
-old_result = oldDB['sportsnet_result']
+old_result = oldDB['di_result']
 new_record = newDB['record']
 
 oldDB.begin()
@@ -15,7 +15,7 @@ try:
     statement = 'SELECT * \
                 FROM `event` e, \
                       (SELECT * \
-                       FROM `athlete` a, `sportsnet_result` r  \
+                       FROM `athlete` a, `di_result` r  \
                        WHERE a.`AthleteDataId`=r.`DataId`) ar \
                 WHERE e.EventId=ar.AthleteEventId'
 
