@@ -38,7 +38,7 @@ def race(id, statement):
                 'CPName': row['CPName'],
                 'CPDistance': row['CPDistance']
         }
-
+        
         # 若上一row與這一row的EventName不一樣
         # 代表此賽事的cp_json新增完畢 -> insert到db
         if event != row['EventName']:
@@ -129,11 +129,14 @@ def record(id, TimeCheck_num):
 def find_max_id(table):
     statement = f'SELECT MAX(x.id) AS max_id FROM {table} x'
     id = [row for row in newDB.query(statement)]
-    return id[0]['max_id']
+    if id[0]['max_id'] == None:
+        return 0
+    else:
+        return id[0]['max_id']
 
 def main():
     try:
-        contest(find_max_id('contest'))
+        # contest(find_max_id('contest'))
 
         stmt_sportsman = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
                                 FROM `race` r, \
@@ -141,7 +144,9 @@ def main():
                                     FROM `event_checkpoint` ck, `event` e \
                                     WHERE ck.`EventId`=e.`EventId`) eck \
                                 WHERE r.RaceId=eck.EventId'
+        print(find_max_id('race'))
         race(find_max_id('race'), stmt_sportsman)
+
         stmt_di = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
                         FROM `race` r, \
                             (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
