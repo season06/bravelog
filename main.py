@@ -71,11 +71,11 @@ def race(id, statement):
     newDB.commit()
     print("race insert success")
 
-def record(id, TimeCheck_num):
+def record(id, table, TimeCheck_num):
     statement = 'SELECT * \
                 FROM `event` e, \
                       (SELECT * \
-                       FROM `athlete` a, `di_result` r  \
+                       FROM `athlete` a, `{table}` r  \
                        WHERE a.`AthleteDataId`=r.`DataId`) ar \
                 WHERE e.EventId=ar.AthleteEventId'
 
@@ -144,7 +144,6 @@ def main():
                                     FROM `event_checkpoint` ck, `event` e \
                                     WHERE ck.`EventId`=e.`EventId`) eck \
                                 WHERE r.RaceId=eck.EventId'
-        print(find_max_id('race'))
         race(find_max_id('race'), stmt_sportsman)
 
         stmt_di = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
@@ -155,10 +154,8 @@ def main():
                         WHERE r.RaceId=eck.RaceId'
         race(find_max_id('race'), stmt_di)
 
-        TimeCheck_sportsman = 12
-        record(find_max_id('record'), TimeCheck_sportsman)
-        TimeCheck_di = 9
-        record(find_max_id('record'), TimeCheck_di)
+        record(find_max_id('record'), 'sportsnet_result', 12)
+        record(find_max_id('record'), 'di_result', 9)
 
     except Exception as err:
         newDB.rollback()
