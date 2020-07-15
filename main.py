@@ -1,6 +1,6 @@
 import dataset
-oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
-newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog')
+newDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog_new')
 
 new_contest = newDB['contest']
 new_race = newDB['race']
@@ -9,8 +9,7 @@ new_record = newDB['record']
 oldDB.begin()
 newDB.begin()
 
-def contest():
-    id = 0
+def contest(id):
     for row in oldDB['race']:
         id += 1
         data = {
@@ -29,14 +28,13 @@ def contest():
     newDB.commit()
     print("contest insert success")
 
-def race():
+def race(id):
     statement = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
                  FROM `race` r, \
                     (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
                      FROM `event_checkpoint` ck, `event` e \
                      WHERE ck.`EventId`=e.`EventId`) eck \
                  WHERE r.RaceId=eck.RaceId'
-    id = 0
     event = ''
     data = {}
 
@@ -81,14 +79,13 @@ def race():
     newDB.commit()
     print("race insert success")
 
-def record():
+def record(id):
     statement = 'SELECT * \
                 FROM `event` e, \
                       (SELECT * \
                        FROM `athlete` a, `di_result` r  \
                        WHERE a.`AthleteDataId`=r.`DataId`) ar \
                 WHERE e.EventId=ar.AthleteEventId'
-    id = 0
 
     for row in oldDB.query(statement):
         id += 1
@@ -137,11 +134,19 @@ def record():
     newDB.commit()
     print("record insert success")
 
+def find_max_id(table):
+    statement = f'SELECT MAX(x.id) AS max_id FROM {table} x'
+    id = [row for row in newDB.query(statement)]
+    return id[0]['max_id']
+
 def main():
     try:
-        contest()
-        race()
-        record()
+        contest(find_max_id('contest'))
+        race(find_max_id('race'))
+        record(find_max_id('record'))
     except Exception as err:
         newDB.rollback()
         print(err)
+
+if __name__ == "__main__":
+    main()
