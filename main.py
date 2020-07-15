@@ -72,10 +72,10 @@ def race(id, statement):
     print("race insert success")
 
 def record(id, table, TimeCheck_num):
-    statement = 'SELECT * \
+    statement = f'SELECT * \
                 FROM `event` e, \
                       (SELECT * \
-                       FROM `athlete` a, `{table}` r  \
+                       FROM `athlete` a, {table} r  \
                        WHERE a.`AthleteDataId`=r.`DataId`) ar \
                 WHERE e.EventId=ar.AthleteEventId'
 
@@ -136,7 +136,7 @@ def find_max_id(table):
 
 def main():
     try:
-        # contest(find_max_id('contest'))
+        contest(find_max_id('contest'))
 
         stmt_sportsman = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
                                 FROM `race` r, \
