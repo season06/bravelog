@@ -1,6 +1,6 @@
 import dataset
-oldDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog')
-newDB = dataset.connect('mysql+pymysql://root:season1006@localhost/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
+newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
 
 new_contest = newDB['contest']
 new_race = newDB['race']
@@ -28,30 +28,27 @@ def contest(id):
     newDB.commit()
     print("contest insert success")
 
-def race(id):
-    statement = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
-                 FROM `race` r, \
-                    (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
-                     FROM `event_checkpoint` ck, `event` e \
-                     WHERE ck.`EventId`=e.`EventId`) eck \
-                 WHERE r.RaceId=eck.RaceId'
+def race(id, statement):
     event = ''
     data = {}
 
     for row in oldDB.query(statement):
+        cp_config = {
+                'CPId': row['CPId'],
+                'CPName': row['CPName'],
+                'CPDistance': row['CPDistance']
+        }
+
+        # 若上一row與這一row的EventName不一樣
+        # 代表此賽事的cp_json新增完畢 -> insert到db
         if event != row['EventName']:
-            if event != '':
+            if event != '': # 第一次不insert
                 data['cp_json'] = str(data['cp_json'])
                 new_race.insert(data)
 
             event = row['EventName']
             id += 1
-
-            cp_config = {
-                'CPId': row['CPId'],
-                'CPName': row['CPName'],
-                'CPDistance': row['CPDistance']
-            }
+            
             data = {
                 'id': id,
                 'uid': id,
@@ -66,11 +63,6 @@ def race(id):
                 'is_passed': 0
             }
         else:
-            cp_config = {
-                'CPId': row['CPId'],
-                'CPName': row['CPName'],
-                'CPDistance': row['CPDistance']
-            }
             data['cp_json'].append(cp_config)
             
     data['cp_json'] = str(data['cp_json'])
@@ -79,7 +71,7 @@ def race(id):
     newDB.commit()
     print("race insert success")
 
-def record(id):
+def record(id, TimeCheck_num):
     statement = 'SELECT * \
                 FROM `event` e, \
                       (SELECT * \
@@ -90,7 +82,7 @@ def record(id):
     for row in oldDB.query(statement):
         id += 1
         
-        # for cp_config
+        # for cp_config, TimeCheck根據賽事有所不同
         cp_config = [{
                         'CP_Mode': 'Gun',
                         'CP_Time': row['TimeGun']
@@ -101,7 +93,7 @@ def record(id):
                         'CP_Mode': 'End',
                         'CP_Time': row['finishTime']
                     }]
-        for i in range(1,10):
+        for i in range(1,TimeCheck_num+1):
             col = f'TimeCheck0{i}' if i<10 else f'TimeCheck{i}'
             temp = {
                 'CP_Mode': f'CP{i}',
@@ -142,8 +134,27 @@ def find_max_id(table):
 def main():
     try:
         contest(find_max_id('contest'))
-        race(find_max_id('race'))
-        record(find_max_id('record'))
+
+        stmt_sportsman = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
+                                FROM `race` r, \
+                                    (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
+                                    FROM `event_checkpoint` ck, `event` e \
+                                    WHERE ck.`EventId`=e.`EventId`) eck \
+                                WHERE r.RaceId=eck.EventId'
+        race(find_max_id('race'), stmt_sportsman)
+        stmt_di = 'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
+                        FROM `race` r, \
+                            (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
+                            FROM `event_checkpoint` ck, `event` e \
+                            WHERE ck.`EventId`=e.`EventId`) eck \
+                        WHERE r.RaceId=eck.RaceId'
+        race(find_max_id('race'), stmt_di)
+
+        TimeCheck_sportsman = 12
+        record(find_max_id('record'), TimeCheck_sportsman)
+        TimeCheck_di = 9
+        record(find_max_id('record'), TimeCheck_di)
+
     except Exception as err:
         newDB.rollback()
         print(err)
