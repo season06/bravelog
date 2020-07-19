@@ -69,13 +69,13 @@ def findMaxId(table):
 
 def main():
     try:
-        # insertToContest(findMaxId('contest'))
+        insertToContest(findMaxId('contest'))
 
         insertToRace(findMaxId('race'), 'sportsman')
         insertToRace(findMaxId('race'), 'di')
 
-        # insertToRecord(findMaxId('record'), 'sportsnet_result', 12)
-        # insertToRecord(findMaxId('record'), 'di_result', 9)
+        insertToRecord(findMaxId('record'), 'sportsnet_result', 12)
+        insertToRecord(findMaxId('record'), 'di_result', 9)
 
     except Exception as err:
         newDB.rollback()

@@ -38,7 +38,7 @@ def getRaceCpConfig(row):
 def getRaceData(row, id, race_cp_dict):
     race_data = {
         'id': id,
-        'uid': id,
+        'uid': row['EventId'],
         'contest_id': row['RaceId'],
         'sort': id,
         'title': row['EventName'],
@@ -84,7 +84,7 @@ def getRecordCpTiming(row, TimeCheck_num):
 def getRecordData(row, id, record_cp_dict):
     record_data = {
         'id': id,
-        'uid': id,
+        'uid': row['AthleteDataId'],
         'race_id': row['RaceId'],
         'number': row['AthleteNo'],
         'name': row['AthleteName'],
