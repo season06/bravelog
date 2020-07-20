@@ -1,5 +1,6 @@
 import dataset
 from getDictionary import *
+from utils.log_utils import Logger
 
 oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
 newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
@@ -12,19 +13,22 @@ oldDB.begin()
 newDB.begin()
 
 def insertToContest(id):
-    for row in oldDB['race']:
+    table = oldDB['race']
+    for row in table:
         id += 1
         contest_data = getContestData(row, id)
         new_contest.insert(contest_data)
     newDB.commit()
-    print("contest insert success")
+    mylog.info("contest insert success")
 
 def insertToRace(id, host):
     race_statement = getRaceStatement(host)
+    table = oldDB.query(race_statement)
+
     event = ''
     race_data = {}
 
-    for row in oldDB.query(race_statement):
+    for row in table:
         cp_dict = getRaceCpConfig(row)
         
         # 若上一row與這一row的EventName不一樣,代表此賽事的cp_json新增完畢 -> insert到db
@@ -44,12 +48,13 @@ def insertToRace(id, host):
     new_race.insert(race_data)
 
     newDB.commit()
-    print("race insert success")
+    mylog.info("race insert success")
 
 def insertToRecord(id, table, TimeCheck_num):
     record_statement = getRecordStatement(table)
-    
-    for row in oldDB.query(record_statement):
+    table = oldDB.query(record_statement)
+
+    for row in table:
         id += 1
         
         cp_timing_dict = getRecordCpTiming(row, TimeCheck_num)
@@ -57,7 +62,7 @@ def insertToRecord(id, table, TimeCheck_num):
         new_record.insert(record_data)
 
     newDB.commit()
-    print("record insert success")
+    mylog.info("record insert success")
 
 def findMaxId(table):
     statement = f'SELECT MAX(x.id) AS max_id FROM {table} x'
@@ -79,7 +84,8 @@ def main():
 
     except Exception as err:
         newDB.rollback()
-        print(err)
+        mylog.error("Transaction error -> " + err)
 
 if __name__ == "__main__":
+    mylog = Logger(logger="admin")
     main()
