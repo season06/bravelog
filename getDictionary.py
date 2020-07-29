@@ -1,6 +1,5 @@
-def getContestData(row, id):
+def getContestData(row):
     contest_data = {
-        'id': id,
         'uid': row['RaceId'],
         'title': row['RaceName'],
         'banner': row['url'],
@@ -35,12 +34,11 @@ def getRaceCpConfig(row):
     }
     return race_cp_dict
 
-def getRaceData(row, id, race_cp_dict):
+def getRaceData(row, race_cp_dict):
     race_data = {
-        'id': id,
         'uid': row['EventId'],
         'contest_id': row['RaceId'],
-        'sort': id,
+        'sort': 0,
         'title': row['EventName'],
         'banner': row['bannerFile'],
         'race_status': 36,
@@ -81,11 +79,11 @@ def getRecordCpTiming(row, TimeCheck_num):
         record_cp_dict.append(temp)
     return record_cp_dict
 
-def getRecordData(row, id, record_cp_dict):
+def getRecordData(row, record_cp_dict):
     record_data = {
-        'id': id,
         'uid': row['AthleteDataId'],
         'race_id': row['RaceId'],
+        'race_id_temp': row['EventId'],  # temp
         'number': row['AthleteNo'],
         'name': row['AthleteName'],
         'nation': row['AthleteCountryCode'],
@@ -94,7 +92,7 @@ def getRecordData(row, id, record_cp_dict):
         'person_finish_time': float(row['personalFinishTime']),
         'gun_finish_time': float(row['finishTime']),
         'team': row['AthleteTeam'],
-        'team_sort': id,
+        'team_sort': 0,
         'total_place': row['RankAll'],
         'group_place': row['RankCat'],
         'gender_place': row['RankSex'],

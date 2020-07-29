@@ -2,8 +2,8 @@ import dataset
 from getDictionary import *
 from utils.log_utils import Logger
 
-oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
-newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@172.105.206.159/bravelog')
+newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@172.105.206.159/bravelog_new')
 
 new_contest = newDB['contest']
 new_race = newDB['race']
@@ -12,16 +12,15 @@ new_record = newDB['record']
 oldDB.begin()
 newDB.begin()
 
-def insertToContest(id):
+def insertToContest():
     table = oldDB['race']
     for row in table:
-        id += 1
-        contest_data = getContestData(row, id)
+        contest_data = getContestData(row)
         new_contest.insert(contest_data)
     newDB.commit()
     mylog.info("contest insert success")
 
-def insertToRace(id, host):
+def insertToRace(host):
     race_statement = getRaceStatement(host)
     table = oldDB.query(race_statement)
 
@@ -38,8 +37,7 @@ def insertToRace(id, host):
                 new_race.insert(race_data)
 
             event = row['EventName']
-            id += 1
-            race_data = getRaceData(row, id, cp_dict)
+            race_data = getRaceData(row, cp_dict)
             
         else:
             race_data['cp_json'].append(cp_dict)
@@ -50,15 +48,14 @@ def insertToRace(id, host):
     newDB.commit()
     mylog.info("race insert success")
 
-def insertToRecord(id, table, TimeCheck_num):
+def insertToRecord(table, TimeCheck_num):
     record_statement = getRecordStatement(table)
     table = oldDB.query(record_statement)
 
     for row in table:
-        id += 1
         
         cp_timing_dict = getRecordCpTiming(row, TimeCheck_num)
-        record_data = getRecordData(row, id, cp_timing_dict)
+        record_data = getRecordData(row, cp_timing_dict)
         new_record.insert(record_data)
 
     newDB.commit()
@@ -74,17 +71,17 @@ def findMaxId(table):
 
 def main():
     try:
-        insertToContest(findMaxId('contest'))
+        insertToContest()
 
-        insertToRace(findMaxId('race'), 'sportsman')
-        insertToRace(findMaxId('race'), 'di')
+        # insertToRace(findMaxId('race'), 'sportsman')
+        insertToRace('di')
 
-        insertToRecord(findMaxId('record'), 'sportsnet_result', 12)
-        insertToRecord(findMaxId('record'), 'di_result', 9)
+        # insertToRecord(findMaxId('record'), 'sportsnet_result', 12)
+        insertToRecord('di_result', 9)
 
     except Exception as err:
         newDB.rollback()
-        mylog.error("Transaction error -> " + err)
+        mylog.error("Transaction error -> " + str(err))
 
 if __name__ == "__main__":
     mylog = Logger(logger="admin")
