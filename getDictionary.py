@@ -90,6 +90,7 @@ def getRecordStatement(table):
 
 def getRecordCpTiming(row, host):
     check_num = TimeCheckNum[host]
+    unit = TimeUnit[host]
 
     # get contest date
     contest_date_str = row['EventCode']
