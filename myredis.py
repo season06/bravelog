@@ -17,12 +17,12 @@ class redisDB():
     def connect(self):
         return self.r
 
-    def find_user_hash(self):
-        username = 'userA'
-        if self.r.exists(username) == None:
-            print(username + ' is not exist')
-        else:
-            print(self.r.hgetall(username)) # O(N)
+    # def find_user_hash(self):
+    #     username = 'userA'
+    #     if self.r.exists(username) == None:
+    #         print(username + ' is not exist')
+    #     else:
+    #         print(self.r.hgetall(username)) # O(N)
 
     def insert_user_info(self, contest_date):
         pipe = self.r.pipeline()
@@ -71,3 +71,5 @@ if __name__ == "__main__":
     main()
 
 # cd /usr/local/opt/redis/bin open redis-cli
+
+# 3 min 6 9

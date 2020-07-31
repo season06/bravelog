@@ -2,10 +2,10 @@ import dataset
 from getDictionary import *
 from utils.log_utils import Logger
 
-oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
-newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
-# oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
-# newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
+# oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
+# newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
+newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
 
 new_contest = newDB['contest']
 new_race = newDB['race']
@@ -14,10 +14,10 @@ new_record = newDB['record']
 oldDB.begin()
 newDB.begin()
 
-def insertToContest(host):
+def insertToContest():
     table = oldDB['race']
     for row in table:
-        contest_data = getContestData(row, host)
+        contest_data = getContestData(row)
         new_contest.insert(contest_data)
     newDB.commit()
     mylog.info("contest insert success")
@@ -35,7 +35,7 @@ def insertToRace(host):
         # 若上一row與這一row的EventName不一樣,代表此賽事的cp_json新增完畢 -> insert到db
         if event != row['EventName']:
             if event != '': # 第一次不insert
-                race_data['cp_json'] = str(race_data['cp_json'])
+                race_data['cp_json'] = json.dumps(race_data['cp_json'])
                 new_race.insert(race_data)
 
             event = row['EventName']
@@ -66,9 +66,9 @@ def insertToRecord(host):
 def main():
     try:
         host = 'di'
-        insertToContest(host)
+        # insertToContest()
         insertToRace(host)
-        insertToRecord(host)
+        # insertToRecord(host)
 
     except Exception as err:
         newDB.rollback()

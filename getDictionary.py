@@ -19,14 +19,14 @@ TimeUnit = {
 }
 
 ### Contest ###
-def getContestData(row, host):
+def getContestData(row):
     contest_data = {
         'uid': row['RaceId'],
         'title': row['RaceName'],
         'banner': row['url'],
         'leading_id': 0,
-        'timing_com': TimingCom[host],
-        'timing_type': TimingType[host],
+        # 'timing_com': TimingCom[host],
+        # 'timing_type': TimingType[host],
         'service': 13,
         'start_date': row['RaceTime'],
         'create_user_id': 'season',
