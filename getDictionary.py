@@ -1,21 +1,30 @@
 from datetime import datetime, timedelta
+TimingCom = {
+    'sportsnet': 0, # ??
+    'di': 9
+}
+TimingType = {
+    'sportsnet': 8,
+    'di': 13
+}
+TimeCheckNum = {
+    'sportsnet': 12,
+    'di': 9
+}
+TimeUnit = {
+    'sportsnet': 1,
+    'di': 1000
+}
 
 ### Contest ###
 def getContestData(row, host):
-    timing_com = {
-        'di': 9
-    }
-    timing_type = {
-        'sportsnet': 8,
-        'di': 13
-    }
     contest_data = {
         'uid': row['RaceId'],
         'title': row['RaceName'],
         'banner': row['url'],
         'leading_id': 0,
-        'timing_com': timing_com[host],
-        'timing_type': timing_type[host],
+        'timing_com': TimingCom[host],
+        'timing_type': TimingType[host],
         'service': 13,
         'start_date': row['RaceTime'],
         'create_user_id': 'season',
@@ -80,15 +89,8 @@ def getRecordStatement(table):
     return record_statement
 
 def getRecordCpTiming(row, host):
-    TimeCheck_num = {
-        'sportsnet': 12,
-        'di': 9
-    }
-    time_unit = {
-        'sportsnet': 1,
-        'di': 1000
-    }
-    unit = time_unit[host]
+    check_num = TimeCheckNum[host]
+
     # get contest date
     contest_date_str = row['EventCode']
     contest_date = datetime.strptime(contest_date_str, '%Y%m%d%H')
@@ -101,7 +103,7 @@ def getRecordCpTiming(row, host):
         "CP_Time": getDate(contest_date, int(row['TimeStart'])/unit)
     }]
     # TimeCheck根據賽事有所不同
-    for i in range(1,TimeCheck_num[host]+1):
+    for i in range(1, check_num+1):
         col = f"TimeCheck0{i}" if i<10 else f"TimeCheck{i}"
         # 若"CP_time"為0 則不insert
         if int(row[col]) == 0:
@@ -121,6 +123,8 @@ def getRecordCpTiming(row, host):
     return record_cp_dict
 
 def getRecordData(row, record_cp_dict):
+    unit = TimeUnit[host]
+
     record_data = {
         'uid': row['AthleteDataId'],
         'race_id': row['RaceId'],
@@ -130,8 +134,8 @@ def getRecordData(row, record_cp_dict):
         'nation': row['AthleteCountryCode'],
         'gender': 0 if row['AthleteGender'] == 'M' else 1,  # turn varchar into int
         'group': row['AthleteGroup'],
-        'person_finish_time': float(row['personalFinishTime']),
-        'gun_finish_time': float(row['finishTime']),
+        'person_finish_time': float(row['personalFinishTime']) / unit,
+        'gun_finish_time': float(row['finishTime']) / unit,
         'team': row['AthleteTeam'],
         'team_sort': 0,
         'total_place': row['RankAll'],
