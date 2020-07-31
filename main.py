@@ -57,7 +57,7 @@ def insertToRecord(host):
 
     for row in table:
         cp_timing_dict = getRecordCpTiming(row, host)
-        record_data = getRecordData(row, cp_timing_dict)
+        record_data = getRecordData(row, cp_timing_dict, host)
         new_record.insert(record_data)
 
     newDB.commit()

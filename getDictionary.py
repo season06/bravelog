@@ -123,7 +123,7 @@ def getRecordCpTiming(row, host):
 
     return record_cp_dict
 
-def getRecordData(row, record_cp_dict):
+def getRecordData(row, record_cp_dict, host):
     unit = TimeUnit[host]
 
     record_data = {
