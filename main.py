@@ -2,10 +2,10 @@ import dataset
 from getDictionary import *
 from utils.log_utils import Logger
 
-oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
-newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
-# oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
-# newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
+# oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
+# newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
+newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
 
 new_contest = newDB['contest']
 new_race = newDB['race']
@@ -44,7 +44,7 @@ def insertToRace(host):
         else:
             race_data['cp_json'].append(cp_dict)
             
-    race_data['cp_json'] = str(race_data['cp_json'])
+    race_data['cp_json'] = json.dumps(race_data['cp_json'])
     new_race.insert(race_data)
 
     newDB.commit()
@@ -56,8 +56,8 @@ def insertToRecord(host):
     table = oldDB.query(record_statement)
 
     for row in table:
-        cp_timing_dict = getRecordCpTiming(row, host)
-        record_data = getRecordData(row, cp_timing_dict, host)
+        cp_timing = getRecordCpTiming(row, host)
+        record_data = getRecordData(row, cp_timing, host)
         new_record.insert(record_data)
 
     newDB.commit()
@@ -66,8 +66,8 @@ def insertToRecord(host):
 def main():
     try:
         host = 'di'
-        insertToContest(host)
-        insertToRace(host)
+        # insertToContest(host)
+        # insertToRace(host)
         insertToRecord(host)
 
     except Exception as err:

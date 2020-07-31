@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+import json
+
 TimingCom = {
     'sportsnet': 0, # ??
     'di': 9
@@ -117,13 +119,15 @@ def getRecordCpTiming(row, host):
     # insert finish time
     finish_cp = {
         "CP_Mode": "End",
-        "CP_Time": getDate(contest_date, int(row['finishTime'])/unit)
+        "CP_Time": getDate(contest_date, int(row['TimeFinish'])/unit)
     }
     record_cp_dict.append(finish_cp)
 
-    return record_cp_dict
+    record_cp_json = json.dumps(record_cp_dict)
 
-def getRecordData(row, record_cp_dict, host):
+    return record_cp_json
+
+def getRecordData(row, record_cp, host):
     unit = TimeUnit[host]
 
     record_data = {
@@ -142,7 +146,7 @@ def getRecordData(row, record_cp_dict, host):
         'total_place': row['RankAll'],
         'group_place': row['RankCat'],
         'gender_place': row['RankSex'],
-        'cp_timing_json': str(record_cp_dict),
+        'cp_timing_json': record_cp,
         'is_deleted': 0,
         'is_disqualified': 0,
         'is_passed': 0
