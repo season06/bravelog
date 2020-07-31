@@ -2,8 +2,11 @@ import dataset
 from getDictionary import *
 from utils.log_utils import Logger
 
-oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@172.105.206.159/bravelog')
-newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@172.105.206.159/bravelog_new')
+
+# oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
+# newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
+oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
+newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
 
 new_contest = newDB['contest']
 new_race = newDB['race']
@@ -12,10 +15,10 @@ new_record = newDB['record']
 oldDB.begin()
 newDB.begin()
 
-def insertToContest():
+def insertToContest(host):
     table = oldDB['race']
     for row in table:
-        contest_data = getContestData(row)
+        contest_data = getContestData(row, host)
         new_contest.insert(contest_data)
     newDB.commit()
     mylog.info("contest insert success")
@@ -48,36 +51,25 @@ def insertToRace(host):
     newDB.commit()
     mylog.info("race insert success")
 
-def insertToRecord(table, TimeCheck_num):
+def insertToRecord(host):
+    table = f'{host}_result'
     record_statement = getRecordStatement(table)
     table = oldDB.query(record_statement)
 
     for row in table:
-        
-        cp_timing_dict = getRecordCpTiming(row, TimeCheck_num)
+        cp_timing_dict = getRecordCpTiming(row, host)
         record_data = getRecordData(row, cp_timing_dict)
         new_record.insert(record_data)
 
     newDB.commit()
     mylog.info("record insert success")
 
-def findMaxId(table):
-    statement = f'SELECT MAX(x.id) AS max_id FROM {table} x'
-    id = [row for row in newDB.query(statement)]
-    if id[0]['max_id'] == None:
-        return 0
-    else:
-        return id[0]['max_id']
-
 def main():
     try:
-        insertToContest()
-
-        # insertToRace(findMaxId('race'), 'sportsman')
-        insertToRace('di')
-
-        # insertToRecord(findMaxId('record'), 'sportsnet_result', 12)
-        insertToRecord('di_result', 9)
+        host = 'di'
+        # insertToContest(host)
+        # insertToRace(host)
+        insertToRecord(host)
 
     except Exception as err:
         newDB.rollback()
