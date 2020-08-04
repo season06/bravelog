@@ -1,0 +1,81 @@
+** SIEGE 4.0.2
+** Preparing 2 concurrent users for battle.
+The server is now under siege...
+[0;34mHTTP/1.1 200     0.31 secs:    5158 bytes ==> GET  /html/race/contest/20200719D02[0m
+[0;34mHTTP/1.1 200     0.01 secs:     467 bytes ==> GET  /html/assets/img/week-contest.svg[0m
+[0;34mHTTP/1.1 200     0.64 secs:   52341 bytes ==> GET  /uzhhcNm.jpg[0m
+[0;34mHTTP/1.1 200     0.02 secs:   17773 bytes ==> GET  /dev/images/profile.png[0m
+[0;34mHTTP/1.1 200     0.01 secs:      44 bytes ==> GET  /tr?id=381419359198733&ev=PageView&noscript=1[0m
+[0;34mHTTP/1.1 200     0.02 secs:    1659 bytes ==> GET  /html/assets/js/jquery.barfiller.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:    5136 bytes ==> GET  /html/assets/js/lightbox.js[0m
+[0;34mHTTP/1.1 200     0.05 secs:   30289 bytes ==> GET  /html/assets/js/jquery-3.3.1.min.js[0m
+[0;34mHTTP/1.1 200     0.03 secs:     395 bytes ==> GET  /html/assets/css/barfiller.css[0m
+[0;34mHTTP/1.1 200     0.02 secs:    1104 bytes ==> GET  /html/assets/css/lightbox.css[0m
+[0;34mHTTP/1.1 200     0.04 secs:    5730 bytes ==> GET  /html/assets/css/main.css?v=999766205[0m
+[0;34mHTTP/1.1 200     0.02 secs:   16231 bytes ==> GET  /html/assets/fonts/icofont/icofont.min.css[0m
+[0;34mHTTP/1.1 200     0.09 secs:    1034 bytes ==> GET  /css?family=Bai+Jamjuree:400,500,600,700[0m
+[0;34mHTTP/1.1 200     0.01 secs:     800 bytes ==> GET  /ajax/libs/normalize/8.0.0/normalize.min.css[0m
+[0;34mHTTP/1.1 200     0.04 secs:   23801 bytes ==> GET  /html/assets/css/bootstrap.min.css[0m
+[0;34mHTTP/1.1 200     0.08 secs:   86586 bytes ==> GET  /gtag/js?id=UA-127835437-1[0m
+[0;34mHTTP/1.1 200     0.30 secs:    5187 bytes ==> GET  /html/race/contest/20200719D02[0m
+[0;34mHTTP/1.1 200     1.80 secs:    5195 bytes ==> GET  /html/race/contest/20200719D02[0m
+[0;34mHTTP/1.1 200     0.09 secs:     467 bytes ==> GET  /html/assets/img/week-contest.svg[0m
+[0;34mHTTP/1.1 200     0.02 secs:     467 bytes ==> GET  /html/assets/img/week-contest.svg[0m
+[0;34mHTTP/1.1 200     0.63 secs:   52341 bytes ==> GET  /uzhhcNm.jpg[0m
+[0;34mHTTP/1.1 200     0.68 secs:   52341 bytes ==> GET  /uzhhcNm.jpg[0m
+[0;34mHTTP/1.1 200     0.07 secs:   17773 bytes ==> GET  /dev/images/profile.png[0m
+[0;34mHTTP/1.1 200     0.03 secs:      44 bytes ==> GET  /tr?id=381419359198733&ev=PageView&noscript=1[0m
+[0;34mHTTP/1.1 200     0.04 secs:   17773 bytes ==> GET  /dev/images/profile.png[0m
+[0;34mHTTP/1.1 200     0.01 secs:      44 bytes ==> GET  /tr?id=381419359198733&ev=PageView&noscript=1[0m
+[0;34mHTTP/1.1 200     0.03 secs:    1659 bytes ==> GET  /html/assets/js/jquery.barfiller.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:    1659 bytes ==> GET  /html/assets/js/jquery.barfiller.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:    5136 bytes ==> GET  /html/assets/js/lightbox.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:   30289 bytes ==> GET  /html/assets/js/jquery-3.3.1.min.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:     395 bytes ==> GET  /html/assets/css/barfiller.css[0m
+[0;34mHTTP/1.1 200     0.01 secs:    1104 bytes ==> GET  /html/assets/css/lightbox.css[0m
+[0;34mHTTP/1.1 200     0.02 secs:    5730 bytes ==> GET  /html/assets/css/main.css?v=999766205[0m
+[0;34mHTTP/1.1 200     0.03 secs:   16231 bytes ==> GET  /html/assets/fonts/icofont/icofont.min.css[0m
+[0;34mHTTP/1.1 200     0.08 secs:    1034 bytes ==> GET  /css?family=Bai+Jamjuree:400,500,600,700[0m
+[0;34mHTTP/1.1 200     0.02 secs:     800 bytes ==> GET  /ajax/libs/normalize/8.0.0/normalize.min.css[0m
+[0;34mHTTP/1.1 200     0.02 secs:   23801 bytes ==> GET  /html/assets/css/bootstrap.min.css[0m
+[0;34mHTTP/1.1 200     0.28 secs:    5136 bytes ==> GET  /html/assets/js/lightbox.js[0m
+[0;34mHTTP/1.1 200     0.03 secs:   30289 bytes ==> GET  /html/assets/js/jquery-3.3.1.min.js[0m
+[0;34mHTTP/1.1 200     0.10 secs:   86586 bytes ==> GET  /gtag/js?id=UA-127835437-1[0m
+[0;34mHTTP/1.1 200     0.02 secs:     395 bytes ==> GET  /html/assets/css/barfiller.css[0m
+[0;34mHTTP/1.1 200     0.02 secs:    1104 bytes ==> GET  /html/assets/css/lightbox.css[0m
+[0;34mHTTP/1.1 200     0.02 secs:    5730 bytes ==> GET  /html/assets/css/main.css?v=999766205[0m
+[0;34m
+Transactions:		          64 hits
+Availability:		      100.00 %
+Elapsed time:		        4.59 secs
+Data transferred:	        0.95 MB
+Response time:		        0.12 secs
+Transaction rate:	       13.94 trans/sec
+Throughput:		        0.21 MB/sec
+Concurrency:		        1.63
+Successful transactions:          64
+Failed transactions:	           0
+Longest transaction:	        1.80
+Shortest transaction:	        0.01
+ 
+HTTP/1.1 200     0.03 secs:   16231 bytes ==> GET  /html/assets/fonts/icofont/icofont.min.css[0m
+[0;34mHTTP/1.1 200     0.08 secs:    1034 bytes ==> GET  /css?family=Bai+Jamjuree:400,500,600,700[0m
+[0;34mHTTP/1.1 200     0.02 secs:     800 bytes ==> GET  /ajax/libs/normalize/8.0.0/normalize.min.css[0m
+[0;34mHTTP/1.1 200     0.02 secs:   23801 bytes ==> GET  /html/assets/css/bootstrap.min.css[0m
+[0;34mHTTP/1.1 200     0.10 secs:   86586 bytes ==> GET  /gtag/js?id=UA-127835437-1[0m
+[0;34mHTTP/1.1 200     0.30 secs:    5158 bytes ==> GET  /html/race/contest/20200719D02[0m
+[0;34mHTTP/1.1 200     0.01 secs:     467 bytes ==> GET  /html/assets/img/week-contest.svg[0m
+[0;34mHTTP/1.1 200     0.68 secs:   52341 bytes ==> GET  /uzhhcNm.jpg[0m
+[0;34mHTTP/1.1 200     0.03 secs:   17773 bytes ==> GET  /dev/images/profile.png[0m
+[0;34mHTTP/1.1 200     0.01 secs:      44 bytes ==> GET  /tr?id=381419359198733&ev=PageView&noscript=1[0m
+[0;34mHTTP/1.1 200     0.02 secs:    1659 bytes ==> GET  /html/assets/js/jquery.barfiller.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:    5136 bytes ==> GET  /html/assets/js/lightbox.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:   30289 bytes ==> GET  /html/assets/js/jquery-3.3.1.min.js[0m
+[0;34mHTTP/1.1 200     0.02 secs:     395 bytes ==> GET  /html/assets/css/barfiller.css[0m
+[0;34mHTTP/1.1 200     0.01 secs:    1104 bytes ==> GET  /html/assets/css/lightbox.css[0m
+[0;34mHTTP/1.1 200     0.03 secs:    5730 bytes ==> GET  /html/assets/css/main.css?v=999766205[0m
+[0;34mHTTP/1.1 200     0.03 secs:   16231 bytes ==> GET  /html/assets/fonts/icofont/icofont.min.css[0m
+[0;34mHTTP/1.1 200     0.08 secs:    1034 bytes ==> GET  /css?family=Bai+Jamjuree:400,500,600,700[0m
+[0;34mHTTP/1.1 200     0.01 secs:     800 bytes ==> GET  /ajax/libs/normalize/8.0.0/normalize.min.css[0m
+[0;34mHTTP/1.1 200     0.03 secs:   23801 bytes ==> GET  /html/assets/css/bootstrap.min.css[0m
+[0;34mHTTP/1.1 200     0.09 secs:   86586 bytes ==> GET  /gtag/js?id=UA-127835437-1[0m
