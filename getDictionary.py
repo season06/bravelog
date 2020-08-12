@@ -11,11 +11,15 @@ TimingType = {
 }
 TimeCheckNum = {
     'sportsnet': 12,
-    'di': 9
+    'di': 9,
+    'eb': 16
+    # 'accurat': 'dict'
 }
 TimeUnit = {
     'sportsnet': 1,
-    'di': 1000
+    'di': 1000,
+    'eb': 1000
+    # 'accurat': 'dict'
 }
 
 ### Contest ###
@@ -38,8 +42,10 @@ def getContestData(row):
 ### Race ###
 def getRaceStatement(host):
     foreign_column = {
-        'sportsman': 'EventId',
-        'di': 'RaceId'
+        'sportsnet': 'EventId',
+        'di': 'RaceId',
+        'eb': 'RaceId',
+        'accurat': 'RaceId'
     }
         
     race_statement = f'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
@@ -96,7 +102,10 @@ def getRecordCpTiming(row, host):
 
     # get contest date
     contest_date_str = row['EventCode']
-    contest_date = datetime.strptime(contest_date_str, '%Y%m%d%H')
+    if len(contest_date_str) == 8:
+        contest_date = datetime.strptime(contest_date_str, '%Y%m%d')
+    elif len(contest_date_str) == 10:
+        contest_date = datetime.strptime(contest_date_str, '%Y%m%d%H')
 
     record_cp_dict = [{
         "CP_Mode": "Gun",
