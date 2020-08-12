@@ -12,13 +12,22 @@ TimingType = {
 TimeCheckNum = {
     'sportsnet': 12,
     'di': 9,
-    'eb': 16
+    'eb': 16,
+    'focusline': 12,
+    'jchip': 9,
+    'lohas': 16,
+    'promos': 9
     # 'accurat': 'dict'
+    # 'eb2' # timecheck too much
 }
 TimeUnit = {
     'sportsnet': 1,
     'di': 1000,
-    'eb': 1000
+    'eb': 1000,
+    'focusline': 1000,
+    'jchip': 1000,
+    'lohas': 1000,
+    'promos': 1000
     # 'accurat': 'dict'
 }
 
@@ -41,19 +50,20 @@ def getContestData(row):
 
 ### Race ###
 def getRaceStatement(host):
-    foreign_column = {
-        'sportsnet': 'EventId',
-        'di': 'RaceId',
-        'eb': 'RaceId',
-        'accurat': 'RaceId'
-    }
+    foreign_column = 'RaceId'
+    # foreign_column = {
+    #     'sportsnet': 'EventId',
+    #     'di': 'RaceId',
+    #     'eb': 'RaceId',
+    #     'accurat': 'RaceId'
+    # }
         
     race_statement = f'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
                         FROM `race` r, \
                             (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
                             FROM `event_checkpoint` ck, `event` e \
                             WHERE ck.`EventId`=e.`EventId`) eck \
-                        WHERE r.RaceId=eck.{foreign_column[host]}'
+                        WHERE r.RaceId=eck.{foreign_column}'
     return race_statement
 
 def getRaceCpConfig(row):

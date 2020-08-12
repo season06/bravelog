@@ -61,14 +61,15 @@ def insertToRecord(host):
         new_record.insert(record_data)
 
     newDB.commit()
-    mylog.info("record insert success")
+    mylog.info(f"{host} record insert success")
 
 def main():
     try:
-        host = 'eb'
+        hosts = ['di', 'eb', 'focusline', 'jchip', 'lohas', 'promos']
         # insertToContest()
-        insertToRace(host)
-        insertToRecord(host)
+        # insertToRace(host)
+        for host in hosts:
+            insertToRecord(host)
 
     except Exception as err:
         newDB.rollback()
