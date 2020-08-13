@@ -1,55 +1,67 @@
 from datetime import datetime, timedelta
 import json
+# eb '2019102706' '2019120105' 
+# focusline '20180922', '20180923' 無eventcheckpoint / '2019042801' 無race
 
-TimingCom = {
-    'sportsnet': 0, # ??
-    'di': 9
-}
-TimingType = {
-    'sportsnet': 8,
-    'di': 13
-}
+# check 'TimeCheckNum' 'api_type_dict' 'timing_com_dict'
+host = 'sportsnet'
+# ????????
+RACEID_arr = ['20190908'] # '2019102701', '2019121501', '2020011901']
+# RACEID = ''
+# RACE_STET = f"and e.`RaceId`='{RACEID}'"
+# RECORD_STET = f"and r.`EventCode`='{RACEID}'"
+
 TimeCheckNum = {
-    'sportsnet': 12,
     'di': 9,
     'eb': 16,
     'focusline': 12,
-    'jchip': 9,
     'lohas': 16,
-    'promos': 9
-    # 'accurat': 'dict'
-    # 'eb2' # timecheck too much
+    'jchip': 9,
+    'promos': 9,
+    'sportsnet': 12,
 }
-TimeUnit = {
-    'sportsnet': 1,
-    'di': 1000,
-    'eb': 1000,
-    'focusline': 1000,
-    'jchip': 1000,
-    'lohas': 1000,
-    'promos': 1000
-    # 'accurat': 'dict'
-}
+
+contest_id_dict = {}
+race_id_dict = {}
 
 ### Contest ###
 def getContestData(row):
+    api_type_dict = {
+        2: '', # focusline
+        4: '', # sportsnet
+        6: '', # promos
+        7: 'read_EB_dropbox.php', # eb
+        9: 'read_dropbox.php',  # di
+        8: '', # jchip
+        11: '' # lohas
+    }
+    timing_com_dict = {
+        'focusline': 22,
+        'di': 9,
+        'eb': 8,
+        'lohas': 26,
+        'jchip': 28,
+        'promos': 23,
+        'sportsnet': 25
+    }
+
     contest_data = {
         'uid': row['RaceId'],
         'title': row['RaceName'],
         'banner': row['url'],
+        'timing_com': timing_com_dict[host],
+        'sync_php_file': api_type_dict[row['ApiType']] if row['ApiType'] != None else '',
         'leading_id': 0,
-        # 'timing_com': TimingCom[host],
-        # 'timing_type': TimingType[host],
         'service': 13,
         'start_date': row['RaceTime'],
         'create_user_id': 'season',
         'is_deleted': 0,
-        'is_passed': 0
+        'is_passed': 1
     }
     return contest_data
 
 ### Race ###
-def getRaceStatement(host):
+def getRaceStatement(RACEID):
     foreign_column = 'RaceId'
     # foreign_column = {
     #     'sportsnet': 'EventId',
@@ -57,12 +69,12 @@ def getRaceStatement(host):
     #     'eb': 'RaceId',
     #     'accurat': 'RaceId'
     # }
-        
-    race_statement = f'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.CPId, eck.CPName, eck.CPDistance \
+    RACE_STET = f"and e.`RaceId`='{RACEID}'"
+    race_statement = f'SELECT r.RaceId, r.bannerFile, eck.EventName, eck.EventId, eck.event_type, eck.CPId, eck.CPName, eck.CPDistance \
                         FROM `race` r, \
-                            (SELECT e.EventName, e.RaceId, ck.EventId, ck.CPId, ck.CPName, ck.CPDistance \
+                            (SELECT e.EventName, e.RaceId, ck.EventId, e.event_type, ck.CPId, ck.CPName, ck.CPDistance \
                             FROM `event_checkpoint` ck, `event` e \
-                            WHERE ck.`EventId`=e.`EventId`) eck \
+                            WHERE ck.`EventId`=e.`EventId` {RACE_STET}) eck \
                         WHERE r.RaceId=eck.{foreign_column}'
     return race_statement
 
@@ -74,15 +86,22 @@ def getRaceCpConfig(row):
     }
     return race_cp_dict
 
-def getRaceData(row, race_cp_dict):
+def getRaceData(row):
+    EventType = {
+        1: 1, # run
+        4: 2, # swim
+        5: 3, # bike
+    }
+
     race_data = {
         'uid': row['EventId'],
-        'contest_id': row['RaceId'],
+        'contest_id': contest_id_dict[row['RaceId']],
         'sort': 0,
         'title': row['EventName'],
+        'race_unit_type': EventType[row['event_type']], # update
         'banner': row['bannerFile'],
         'race_status': 36,
-        'cp_json': [race_cp_dict],
+        'cp_json': '',
         'create_user_id': 'season',
         'is_deleted': 0,
         'is_passed': 0
@@ -97,18 +116,20 @@ def getDate(contest_date, t):
     date = contest_date + timedelta(hours=hour, minutes=minute, seconds=second)
     return str(date)
 
-def getRecordStatement(table):
+def getRecordStatement(table, RACEID):
+    RECORD_STET = f"and r.`EventCode`='{RACEID}'"
+
     record_statement = f'SELECT * \
             FROM `event` e, \
                     (SELECT * \
                     FROM `athlete` a, {table} r  \
-                    WHERE a.`AthleteDataId`=r.`DataId`) ar \
+                    WHERE a.`AthleteDataId`=r.`DataId` {RECORD_STET}) ar \
             WHERE e.EventId=ar.AthleteEventId'
     return record_statement
 
-def getRecordCpTiming(row, host):
+def getRecordCpTiming(row):
     check_num = TimeCheckNum[host]
-    unit = TimeUnit[host]
+    unit = 1000
 
     # get contest date
     contest_date_str = row['EventCode']
@@ -119,10 +140,10 @@ def getRecordCpTiming(row, host):
 
     record_cp_dict = [{
         "CP_Mode": "Gun",
-        "CP_Time": getDate(contest_date, int(row['TimeGun'])/unit)
+        "CP_Time": getDate(contest_date, int(row['TimeGun'])//unit)
     },{
         "CP_Mode": "Start",
-        "CP_Time": getDate(contest_date, int(row['TimeStart'])/unit)
+        "CP_Time": getDate(contest_date, int(row['TimeStart'])//unit)
     }]
     # TimeCheck根據賽事有所不同
     for i in range(1, check_num+1):
@@ -132,13 +153,13 @@ def getRecordCpTiming(row, host):
             break
         temp = {
             "CP_Mode": f"CP{i}",
-            "CP_Time": getDate(contest_date, int(row[col])/unit)
+            "CP_Time": getDate(contest_date, int(row[col])//unit)
         }
         record_cp_dict.append(temp)
     # insert finish time
     finish_cp = {
         "CP_Mode": "End",
-        "CP_Time": getDate(contest_date, int(row['TimeFinish'])/unit)
+        "CP_Time": getDate(contest_date, int(row['TimeFinish'])//unit)
     }
     record_cp_dict.append(finish_cp)
 
@@ -146,20 +167,22 @@ def getRecordCpTiming(row, host):
 
     return record_cp_json
 
-def getRecordData(row, record_cp, host):
-    unit = TimeUnit[host]
+def getRecordData(row, record_cp):
+    unit = 1000
+    person_finish_time = float(row['personalFinishTime']) // unit
+    gun_finish_time = float(row['finishTime']) // unit
 
     record_data = {
         'uid': row['AthleteDataId'],
-        'race_id': row['RaceId'],
-        'race_id_temp': row['EventId'],  # temp
+        'race_id': race_id_dict[row['EventId']],
+        # 'race_id_temp': row['EventId'],  # temp
         'number': row['AthleteNo'],
         'name': row['AthleteName'],
         'nation': row['AthleteCountryCode'],
-        'gender': 0 if row['AthleteGender'] == 'M' else 1,  # turn varchar into int
+        'gender': 1 if row['AthleteGender'] == 'M' else 2,  # turn varchar into int
         'group': row['AthleteGroup'],
-        'person_finish_time': float(row['personalFinishTime']) / unit,
-        'gun_finish_time': float(row['finishTime']) / unit,
+        'person_finish_time': person_finish_time if person_finish_time>=0 else 0,
+        'gun_finish_time': gun_finish_time if gun_finish_time>=0 else 0,
         'team': row['AthleteTeam'],
         'team_sort': 0,
         'total_place': row['RankAll'],
