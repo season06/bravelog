@@ -1,13 +1,12 @@
 from datetime import datetime, timedelta
 import json
-#### 無event_checkpoint table
-# check 'TimeCheckNum' 'api_type_dict' 'timing_com_dict'
+
 host = 'accurat'
-RACEID_arr = [''] #
+RACEID_arr = ['2019122803'] #
 
 contest_id_dict = {}
 race_id_dict = {}
-mainFields = []
+mainField_dict = {}
 
 ### Contest ###
 def getContestData(row):
@@ -37,37 +36,40 @@ def getRaceCpConfig(row):
     }
     return race_cp_config
 
-def accuratdef_to_cpjson(row_acc):
+def accuratdef_to_cpjson(eventid, row_acc, result_acc):
     acc_dict = json.loads(row_acc)
+    result_dict = json.loads(result_acc)
 
-    type_dict = {
-        '': 'Gun',
-        '': 'Run',
-        '': 'Bike',
-        '': 'T1',
-        '': 'T2',
-        '': 'FINISH'
-    }
+    # type_dict = {
+    #     '': 'Gun',
+    #     '': 'Run',
+    #     '': 'Bike',
+    #     '': 'T1',
+    #     '': 'T2',
+    #     '': 'FINISH'
+    # }
     unit_dict = {
-        'Run': 'min/km',
-        'Bike': 'km/hr'
+        'run': 'min/km',
+        'bike': 'km/hr',
+        'swim': 'm/min'
     }
 
     cp_arr = []
-    i = 0
-    mainFields = acc_dict['mainFields'] # restore for record use
-    for field in mainFields:
+    i = 1
+    mainField_dict[eventid] = acc_dict['mainFields']
+    for field in acc_dict['mainFields']:
         CPID = str(i).zfill(2)
         CPName = f'{field}_ENAME'
         CPDistance = f'{field}_DIST'
+        CPType = f'{field}_TYPE'
 
         race_cp_dict = {
             'CPId': CPID,
             'CPName': acc_dict[CPName],
-            'CPShow': '', # for front-end?
-            'CPTYPE': type_dict[], # check type?
+            'CPShow': acc_dict[CPName],
+            'CPTYPE': result_dict[CPType], # check type?
             'CPACTION': ['', ''],
-            'CPUNIT': unit_dict[], # check swim unit?
+            'CPUNIT': unit_dict.get(result_dict[CPType].lower(), ''), # check swim unit?
             'CPMemo': '',
             'CPDistance': acc_dict[CPDistance]
         }
@@ -80,6 +82,7 @@ def getRaceData(row, cp_json):
     EventType = {
         1: 1, # run
         4: 2, # swim
+        3: 3, # ironman
         5: 3, # bike
     }
 
@@ -88,10 +91,10 @@ def getRaceData(row, cp_json):
         'contest_id': contest_id_dict[row['RaceId']],
         'sort': 0,
         'title': row['EventName'], # check all event in a json, or seperate into many row?
-        'race_unit_type': EventType[row['event_type']], # check ironman type?
+        'race_unit_type': EventType[row['event_type']],
         'banner': '',
         'race_status': 36,
-        'cp_json': cp_json,
+        'cp_json': json.dumps(cp_json, ensure_ascii=False).encode('utf8'),
         'create_user_id': 'season',
         'is_deleted': 0,
         'is_passed': 0
@@ -99,17 +102,20 @@ def getRaceData(row, cp_json):
     return race_data
 
 ### Record ###
-def getRecordStatement(table, RACEID):
-    record_statement = f"SELECT * \
-            FROM `event` e, \
-                    (SELECT * \
-                    FROM `athlete` a, {table} r  \
-                    WHERE a.`AthleteRaceId`='{RACEID}' and r.`EventCode`='{RACEID}' ar \
-            WHERE e.`RaceId`=ar.`EventCode`"
-    return record_statement
+def get_cp_timeing_json(mode, date_str, time_str): # ('Gun', '20191117', '00:20:39')
+    if time_str == '--:--:--':
+        return 0
 
-def get_cp_timeing_json(mode, date, time_str): # ('Gun', 20191117, '00:20:39')
+    date = ''
+    if len(date_str) == 8:
+        date = datetime.strptime(date_str, '%Y%m%d')
+    elif len(date_str) == 10:
+        date = datetime.strptime(date_str, '%Y%m%d%H')
+    else:
+        date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    
     time = time_str.split(':')
+    time = [ t if t != '--' else '0' for t in time]
     date = date + timedelta(hours=int(time[0]), minutes=int(time[1]), seconds=int(time[2]))
 
     cp_timing_json = {
@@ -121,22 +127,17 @@ def get_cp_timeing_json(mode, date, time_str): # ('Gun', 20191117, '00:20:39')
 def getRecordCpTiming(row):
     result_dict = json.loads(row['resultData'])
 
-    # get contest date
-    contest_date_str = str(row['EventCode'])
-    if len(contest_date_str) == 8:
-        contest_date = datetime.strptime(contest_date_str, '%Y%m%d')
-    elif len(contest_date_str) == 10:
-        contest_date = datetime.strptime(contest_date_str, '%Y%m%d%H')
-
     # insert field
-    fields = ['Gun', 'Start']
-    fields.append(mainFields)
-    fields.append('FINISH')
+    # fields = ['Gun', 'Start']
+    fields = mainField_dict[row['EventId']]
+    # fields.append('FINISH')
 
     cp_timeing_json_arr = []
-    next_date = contest_date
+    next_date = str(row['EventCode']) # get contest date
     for field in fields:
         _cp = get_cp_timeing_json(field, next_date, result_dict[field])
+        if _cp == 0:
+            break
         cp_timeing_json_arr.append(_cp)
         next_date = _cp['CP_Time']
 
@@ -147,22 +148,24 @@ def getRecordCpTiming(row):
 def getRecordData(row, record_cp): #### 大改 = =
     result_dict = json.loads(row['resultData'])
 
-    t = result_dict['FinishedNodeTotalValue'].split(':')
-    person_finish_time = int(t[0]) * 3600 + int(t[1]) * 60 + int(t[2])
+    person_finish_time = '00:00:00'
+    if result_dict['FinishedNodeTotalValue'] != '--:--:--':
+        t = result_dict['FinishedNodeTotalValue'].split(':')
+        person_finish_time = int(t[0]) * 3600 + int(t[1]) * 60 + int(t[2])
 
     record_data = {
-        'uid': row['AthleteDataId'],
+        'uid': row['DataId'],
         'race_id': race_id_dict[row['EventId']],
-        'number': result_dict['PlayerNo'],
-        'name': result_dict['PlayerName'],
+        'number': row['Bib'],
+        'name': row['Name'],
         'nation': result_dict['Group4'], # ??
-        'gender': 0, # ???
+        'gender': row['Gender'], # ???
         'group': result_dict['Group2'], # ??
         'person_finish_time': person_finish_time,
         'gun_finish_time': 0, # ???
         'team': result_dict['Group2'], # ??
         'team_sort': 0,
-        'total_place': row['placerder'], 
+        'total_place': row['placeOrder'], 
         'group_place': 0, # ???
         'gender_place': 0, # ???
         'cp_timing_json': record_cp,

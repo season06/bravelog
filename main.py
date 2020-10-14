@@ -2,11 +2,12 @@ import dataset
 from getDictionary import *
 from utils.log_utils import Logger
 
+oldDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog')
 # oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
 # newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
-oldDB = dataset.connect('mysql+pymysql://BraveLogAdmin@bravelog-mysql-basic:!BL@5270$4888*B@bravelog-mysql-basic.mysql.database.azure.com/bravelog')
-# newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
-newDB = dataset.connect('mysql+pymysql://BraveLogAdmin@bravelog-mysql-basic:!BL@5270$4888*B@bravelog-mysql-basic.mysql.database.azure.com/bravelog2020')
+# oldDB = dataset.connect('mysql+pymysql://BraveLogAdmin@bravelog-mysql-basic:!BL@5270$4888*B@bravelog-mysql-basic.mysql.database.azure.com/bravelog')
+newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
+# newDB = dataset.connect('mysql+pymysql://BraveLogAdmin@bravelog-mysql-basic:!BL@5270$4888*B@bravelog-mysql-basic.mysql.database.azure.com/bravelog2020')
 
 new_contest = newDB['contest']
 new_race = newDB['race']
@@ -37,9 +38,10 @@ def insertToRace(RACEID):
         'Event': '',
         'CP': []
     }
+    i = 1
 
     for row in table:
-        cp_dict = getRaceCpConfig(row)
+        cp_dict, i = getRaceCpConfig(row, i)
         
         # 若上一row與這一row的EventName不一樣,代表此賽事的cp_json新增完畢 -> insert到db
         if event != row['EventName']:
@@ -48,10 +50,11 @@ def insertToRace(RACEID):
                 race_data['cp_json'] = cp_json
                 primary_id = new_race.insert(race_data) # return primary_key after insert
                 race_id_dict[race_data['uid']] = primary_id
+                i = 1
 
             race_data = getRaceData(row)
             event = row['EventName']
-            cp_json_dict['Event'] = event
+            cp_json_dict['Event'] = row['EventName']
             cp_json_dict['CP'] = [cp_dict]
         else:
             cp_json_dict['CP'].append(cp_dict)
@@ -65,7 +68,7 @@ def insertToRace(RACEID):
     mylog.info(f"race insert success -- ID {RACEID}")
 
 def for_sportsnet_getParameter(_race):
-    _statement = f'SELECT * FROM `sportsnet_result` WHERE `EventCode` LIKE {_race}'
+    _statement = f"""SELECT * FROM `sportsnet_result` WHERE `EventCode` LIKE {_race}"""
     table = oldDB.query(_statement)
     result_athlete_mapping_dict = {} # 'DataId': 'AthleteNo'
 
@@ -82,14 +85,14 @@ def for_sportsnet_getParameter(_race):
     return result_athlete_mapping_dict
 
 def for_sportsnet_getRecordStatement(RACEID, DataId, AthleteNo):
-    RECORD_STET = f"and r.`EventCode`='{RACEID}' and a.`AthleteRaceId`='{RACEID}'"
+    RECORD_STET = f"""and r.`EventCode`='{RACEID}' and a.`AthleteRaceId`='{RACEID}'"""
 
-    record_statement = f"SELECT * \
-            FROM `event` e, \
-                    (SELECT * \
-                    FROM `athlete` a, `sportsnet_result` r  \
-                    WHERE a.`AthleteNo`='{AthleteNo}' and r.`DataId`='{DataId}' {RECORD_STET}) ar \
-            WHERE e.EventId=ar.AthleteEventId"
+    record_statement = f"""SELECT *
+            FROM `event` e,
+                    (SELECT *
+                    FROM `athlete` a, `sportsnet_result` r 
+                    WHERE a.`AthleteNo`='{AthleteNo}' and r.`DataId`='{DataId}' {RECORD_STET}) ar
+            WHERE e.EventId=ar.AthleteEventId"""
     return record_statement
 
 def for_sportsnet_insertToRecord(RACEID):
@@ -119,10 +122,10 @@ def insertToRecord(RACEID):
     newDB.commit()
     mylog.info(f"record insert success -- ID {RACEID}")
 
-def findEventCode():
-    table = 'focusline_result'
+def findEventCode(): # return IDs
+    table = f'accurat_result'
     arr = []
-    stat = f'SELECT DISTINCT(EventCode), count(*) FROM `{table}` group by EventCode'
+    stat = f"""SELECT DISTINCT(EventCode), count(*) FROM `{table}` group by EventCode"""
     table = oldDB.query(stat)
     for row in table:
         arr.append(row['EventCode'])
@@ -130,6 +133,7 @@ def findEventCode():
 
 def main():
     try:
+        # findEventCode()
         for _race in RACEID_arr:
             insertToContest(_race)
             insertToRace(_race)

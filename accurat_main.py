@@ -1,9 +1,7 @@
 import dataset
-from getDictionary_accurat import *
+from accurat_getDictionary import *
 from utils.log_utils import Logger
 
-# oldDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog')
-# newDB = dataset.connect('mysql+pymysql://root:tNMW9ksfylH1oosQ@localhost/bravelog_new')
 oldDB = dataset.connect('mysql+pymysql://BraveLogAdmin@bravelog-mysql-basic:!BL@5270$4888*B@bravelog-mysql-basic.mysql.database.azure.com/bravelog')
 newDB = dataset.connect('mysql+pymysql://user:password@172.105.206.159/bravelog_new')
 # newDB = dataset.connect('mysql+pymysql://BraveLogAdmin@bravelog-mysql-basic:!BL@5270$4888*B@bravelog-mysql-basic.mysql.database.azure.com/bravelog2020')
@@ -31,38 +29,42 @@ def insertToContest(RACEID):
     mylog.info(f"contest insert success -- ID {RACEID}")
 
 def insertToRace(RACEID):
-    race_statement = f'select * from `event` where RaceId = {RACEID}'
-    table = oldDB.query(race_statement)
+    raceSQL = f'select * from `event` where RaceId = {RACEID}'
+    table = oldDB.query(raceSQL)
 
+    ### insert to race
     data = []
     for row in table:
-        cp_arr = accuratdef_to_cpjson(row['accurat_def'])
+        resultSQL = f"select resultData from accurat_result where Race='{row['EventId']}'"
+        t_result = oldDB.query(resultSQL)
+        
+        cp_arr = accuratdef_to_cpjson(row['EventId'], row['accurat_def'], list(t_result)[0]['resultData'])
         cp_json_dict = {
             'Event': row['EventName'],
             'CP': cp_arr
         }
-        cp_json = json.dumps(cp_json_dict, ensure_ascii=False).encode('utf8')
-        data.append(cp_json)
+        # data.append(cp_json_dict)
     
-    race_cp_config = {
-        'RaceID': RACEID,
-        'data': data,
-        'exec_start': 'float', # ?
-        'exec_time': 'float', # ?
-        'activity': 'str' # ?
-    }
-    race_data = getRaceData(row, race_cp_config)
-    # return primary_key after insert, store in dictionary.
-    primary_id = new_race.insert(race_data)
-    race_id_dict[race_data['uid']] = primary_id
+        race_cp_config = {
+            'RaceID': RACEID,
+            'data': cp_json_dict,
+            'exec_start': 'float', # ?
+            'exec_time': 'float', # ?
+            'activity': 'str' # ?
+        }
+        race_data = getRaceData(row, race_cp_config)
+        ### return primary_key after insert, store in dictionary.
+        primary_id = new_race.insert(race_data)
+        race_id_dict[race_data['uid']] = primary_id
 
     newDB.commit()
     mylog.info(f"race insert success -- ID {RACEID}")
 
-def insertToRecord(RACEID):
-    table_name = f'{host}_result'
-    record_statement = getRecordStatement(table_name, RACEID)
-    table = oldDB.query(record_statement)
+def insertRecord(RACEID):
+    recordSQL = f"""SELECT *
+                    FROM `event` e, `accurat_result` r 
+                    WHERE e.`EventId`=r.`Race` and r.`EventCode`='{RACEID}'"""
+    table = oldDB.query(recordSQL)
 
     for row in table:
         cp_timing = getRecordCpTiming(row)
@@ -73,7 +75,7 @@ def insertToRecord(RACEID):
     mylog.info(f"record insert success -- ID {RACEID}")
 
 def findEventCode():
-    table = 'focusline_result'
+    table = f'{host}_result'
     arr = []
     stat = f'SELECT DISTINCT(EventCode), count(*) FROM `{table}` group by EventCode'
     table = oldDB.query(stat)
@@ -86,7 +88,7 @@ def main():
         for _race in RACEID_arr:
             insertToContest(_race)
             insertToRace(_race)
-            # insertToRecord(_race)
+            insertRecord(_race)
             print('\n')
 
     except Exception as err:
